@@ -35,7 +35,7 @@ int * groupsKOutOfN(int k, int n, int &nGroups) {
         return NULL;
     }
     
-    int * orders = (int *) malloc(nGroups * k * sizeof(int));
+    int * orders = new int[nGroups * k];
     
     //Set first group:
     for (int i = 0; i < k; i++) {

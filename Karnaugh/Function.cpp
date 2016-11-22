@@ -13,7 +13,7 @@ Function::Function(int n) {
     nInputs = n;
     nRows = pow(2, nInputs);
     
-    results = (bvalue_t *) malloc(nRows * sizeof(bvalue_t));
+    results = new bvalue_t[nRows];
     
     for (int i = 0; i < nRows; i++) {
         results[i] = 0;
@@ -24,14 +24,14 @@ Function::Function(string expression) {
     nInputs = numberOfInputsInExpression(expression);
     nRows = pow(2, nInputs);
     
-    results = (bvalue_t *) malloc(nRows * sizeof(bvalue_t));
+    results = new bvalue_t[nRows];
     
     for (int i = 0; i < nRows; i++) {
         bvalue_t * inputValues = getInputValuesForRow(i);
         
         results[i] = valueForExpression(expression, nInputs, inputValues);
         
-        free(inputValues);
+        delete[] inputValues;
     }
 }
 
@@ -39,21 +39,21 @@ Function::Function(string expression, int n) {
     nInputs = n;
     nRows = pow(2, nInputs);
     
-    results = (bvalue_t *) malloc(nRows * sizeof(bvalue_t));
+    results = new bvalue_t[nRows];
     
     for (int i = 0; i < nRows; i++) {
         bvalue_t * inputValues = getInputValuesForRow(i);
         
         results[i] = valueForExpression(expression, nInputs, inputValues);
         
-        free(inputValues);
+        delete[] inputValues;
     }
 }
 
 #pragma mark -
 #pragma mark Destructor
 Function::~Function() {
-    free(results);
+    delete[] results;
 }
 
 #pragma mark -
@@ -85,7 +85,7 @@ int Function::getRowForInputValues(bvalue_t * inputValues) const {
 }
 
 bvalue_t * Function::getInputValuesForRow(int rowIndex) const {
-    bvalue_t * inputValues = (bvalue_t *) malloc(nInputs * sizeof(bvalue_t));
+    bvalue_t * inputValues = new bvalue_t[nInputs];
     
     for (int i = 0; i < nInputs; i++) {
         int a = pow(2, nInputs - i - 1);
@@ -155,19 +155,19 @@ void Function::getPrimeImplicants(int &n, string * &primeImplicants) const {
     }else if (all1s) {
         n = 1;
         
-        primeImplicants = (string *) malloc(sizeof(string));
+        primeImplicants = new string[1];
         primeImplicants[0] = "1";
         
         return;
     }
     
     n = 0;
-    primeImplicants = (string *) malloc(nRows * 2 * sizeof(string));
+    primeImplicants = new string[(int) pow(nRows, 2)];
     
-    Function ** combinedPrimeImplicantsFunctions = (Function **) malloc((nInputs - 1) * sizeof(Function *));
+    Function ** combinedPrimeImplicantsFunctions =  new Function * [nInputs - 1];
     
     for (int i = 0; i < nInputs; i++) {
-        Function *combinedPrimeImplicantsFunction = new Function(nInputs);
+        Function * combinedPrimeImplicantsFunction = new Function(nInputs);
         
         int nGroups;
         int *groups = groupsKOutOfN(i + 1, nInputs, nGroups);
@@ -217,7 +217,7 @@ void Function::getPrimeImplicants(int &n, string * &primeImplicants) const {
             }
         }
         
-        free(groups);
+        delete[] groups;
         groups = NULL;
         
         combinedPrimeImplicantsFunctions[i] = combinedPrimeImplicantsFunction;
@@ -230,7 +230,7 @@ void Function::getPrimeImplicants(int &n, string * &primeImplicants) const {
         }
     }
     
-    free(combinedPrimeImplicantsFunctions);
+    delete[] combinedPrimeImplicantsFunctions;
 }
 
 void Function::getEssentialPrimeImplicants(int &n, string * &essentialPrimeImplicants) const {
@@ -241,10 +241,10 @@ void Function::getEssentialPrimeImplicants(int &n, string * &essentialPrimeImpli
     
     //For all rows in the truth table:
     //If the result is 1:
-    //  Find if only one or more prime implicants cover the row
+    //  Find how many prime implicants cover the result
     //  If only one prime implicant covers it:
     //    Remember which one
-    int * epiIndexesForRows = (int *) malloc(nRows * sizeof(int));
+    int * epiIndexesForRows = new int[nRows];
     
     for (int i = 0; i < nRows; i++) {
         epiIndexesForRows[i] = -2;
@@ -270,7 +270,7 @@ void Function::getEssentialPrimeImplicants(int &n, string * &essentialPrimeImpli
     }
     
     //Find which prime implicants are essential:
-    bool * isEpi = (bool *) malloc(m * sizeof(bool));
+    bool * isEpi = new bool[m];
     
     for (int i = 0; i < m; i++) {
         isEpi[i] = false;
@@ -287,7 +287,7 @@ void Function::getEssentialPrimeImplicants(int &n, string * &essentialPrimeImpli
     }
     
     //Store all essential prime implicants in an array:
-    essentialPrimeImplicants = (string *) malloc(n * sizeof(string));
+    essentialPrimeImplicants = new string[n];
     
     n = 0;
     for (int i = 0; i < m; i++) {
@@ -297,9 +297,9 @@ void Function::getEssentialPrimeImplicants(int &n, string * &essentialPrimeImpli
         }
     }
     
-    free(primeImplicants);
-    free(epiIndexesForRows);
-    free(isEpi);
+    delete[] primeImplicants;
+    delete[] epiIndexesForRows;
+    delete[] isEpi;
 }
 
 void Function::getNonessentialPrimeImplicants(int &n, string * &nonessentialPrimeImplicants) const {
@@ -310,10 +310,10 @@ void Function::getNonessentialPrimeImplicants(int &n, string * &nonessentialPrim
     
     //For all rows in the truth table:
     //If the result is 1:
-    //  Find if only one or more prime implicants cover the row
+    //  Find how many prime implicants cover the result
     //  If only one prime implicant covers it:
     //    Remember which one
-    int * epiIndexesForRows = (int *) malloc(nRows * sizeof(int));
+    int * epiIndexesForRows = new int[nRows];
     
     for (int i = 0; i < nRows; i++) {
         epiIndexesForRows[i] = -2;
@@ -339,7 +339,7 @@ void Function::getNonessentialPrimeImplicants(int &n, string * &nonessentialPrim
     }
     
     //Find which prime implicants are essential:
-    bool * isEpi = (bool *) malloc(m * sizeof(bool));
+    bool * isEpi = new bool[m];
     
     for (int i = 0; i < m; i++) {
         isEpi[i] = false;
@@ -356,7 +356,7 @@ void Function::getNonessentialPrimeImplicants(int &n, string * &nonessentialPrim
     }
     
     //Store all nonessential prime implicants in an array:
-    nonessentialPrimeImplicants = (string *) malloc((m - n) * sizeof(string));
+    nonessentialPrimeImplicants = new string[m - n];
     
     n = 0;
     for (int i = 0; i < m; i++) {
@@ -366,9 +366,9 @@ void Function::getNonessentialPrimeImplicants(int &n, string * &nonessentialPrim
         }
     }
     
-    free(primeImplicants);
-    free(epiIndexesForRows);
-    free(isEpi);
+    delete[] primeImplicants;
+    delete[] epiIndexesForRows;
+    delete[] isEpi;
 }
 
 #pragma mark -
@@ -392,8 +392,8 @@ string Function::getExpression() const {
     Function epiFunction(epiSum, nInputs);
     
     if (epiSum == *this) {
-        free(essentialPrimeImplicants);
-        free(nonessentialPrimeImplicants);
+        delete[] essentialPrimeImplicants;
+        delete[] nonessentialPrimeImplicants;
         
         return epiSum;
     }
@@ -416,20 +416,20 @@ string Function::getExpression() const {
             Function piFunction(piSum, nInputs);
             
             if (piSum == *this) {
-                free(essentialPrimeImplicants);
-                free(nonessentialPrimeImplicants);
+                delete[] essentialPrimeImplicants;
+                delete[] nonessentialPrimeImplicants;
                 
-                free(groups);
+                delete[] groups;
                 
                 return piSum;
             }
         }
         
-        free(groups);
+        delete[] groups;
     }
     
-    free(essentialPrimeImplicants);
-    free(nonessentialPrimeImplicants);
+    delete[] essentialPrimeImplicants;
+    delete[] nonessentialPrimeImplicants;
     
     return "";
 }
@@ -445,7 +445,7 @@ void Function::setResultsWithExpression(string expression) {
         
         results[i] = valueForExpression(expression, nInputs, inputValues);
         
-        free(inputValues);
+        delete[] inputValues;
     }
 }
 
@@ -554,7 +554,7 @@ void Function::printTruthTable() const {
             cout << charForBValue(inputValues[j]) << " ";
         }
         
-        free(inputValues);
+        delete[] inputValues;
         
         cout << "| ";
         cout << charForBValue(results[i]);
@@ -582,7 +582,7 @@ void Function::readInTruthTable() {
             cout << charForBValue(inputValues[j]) << " ";
         }
         
-        free(inputValues);
+        delete[] inputValues;
         
         char c;
         
