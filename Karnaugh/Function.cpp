@@ -280,7 +280,8 @@ void Function::getEssentialPrimeImplicants(int &n, string * &essentialPrimeImpli
     
     for (int i = 0; i < nRows; i++) {
         int index = epiIndexesForRows[i];
-        if (index >= 0) {
+        if (index >= 0 &&
+            isEpi[index] == false) {
             isEpi[index] = true;
             n++;
         }
@@ -349,7 +350,8 @@ void Function::getNonessentialPrimeImplicants(int &n, string * &nonessentialPrim
     
     for (int i = 0; i < nRows; i++) {
         int index = epiIndexesForRows[i];
-        if (index >= 0) {
+        if (index >= 0 &&
+            isEpi[index] == false) {
             isEpi[index] = true;
             n++;
         }
