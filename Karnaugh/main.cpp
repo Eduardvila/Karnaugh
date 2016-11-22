@@ -24,6 +24,8 @@ int main() {
     string line;
     
     while (true) {
+        cin.clear();
+        
         getline(cin, line);
         
         if (line == "") {
@@ -260,7 +262,7 @@ void readList() {
     }
     
     if (line != NULL) {
-        free(line);
+        delete line;
     }
     
     fclose(listFile);
