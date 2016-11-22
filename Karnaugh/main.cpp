@@ -41,6 +41,20 @@ int main() {
 void executeCommand(string line) {
     if (line.find("exit") == 0) {
         exit(0);
+    }else if (line.find("help") == 0) {
+        cout << "The following commands are available:\n";
+        cout << "\n";
+        cout << "1. define [name] with [n] inputs with [expression|truth table|sum notation]\n";
+        cout << "2. print prime implicants for [name]\n";
+        cout << "3. print essential prime implicants for [name]\n";
+        cout << "4. print nonessential prime implicants for [name]\n";
+        cout << "5. print sum of products for [name]\n";
+        cout << "6. print sum notation for [name]\n";
+        cout << "7. print truth table for [name]\n";
+        cout << "8. print Karnaugh map for [name]\n";
+        cout << "9. exit\n";
+        cout << "\n";
+        
     }else if (line.find("define ") == 0) {
         size_t e = line.find(" ", 7);
         
